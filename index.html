@@ -29,8 +29,15 @@
 					this.interval = null;
 				} else {
 					this.interval = setInterval(() => {
-						this.text = this.animal[Math.floor(Math.random() * 12)];
-					}, 100);
+						let index = Math.floor(Math.random() * this.animal.length);
+
+						if (this.animal.length == 0) {
+							this.animal = ["鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"];
+						}
+
+						this.text = this.animal[index];
+						this.animal.splice(index, 1);
+					}, 50);
 				}
 			},
 		},
