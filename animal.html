@@ -1,0 +1,63 @@
+<html>
+
+<head>
+	<title>今晚开什么！！！</title>
+</head>
+
+<body>
+	<div id="app">
+		<p>{{text}}</p>
+		<button @click="toggle">{{interval ? '停止' : '开始'}}</button>
+	</div>
+</body>
+
+</html>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script>
+	var app = new Vue({
+		el: '#app',
+		data: {
+			animal: ["鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"],
+			text: "鼠",
+			interval: null
+		},
+		methods: {
+			toggle() {
+				if (this.interval) {
+					clearInterval(this.interval);
+					this.interval = null;
+				} else {
+					this.interval = setInterval(() => {
+						let index = Math.floor(Math.random() * this.animal.length);
+
+						if (this.animal.length == 0) {
+							this.animal = ["鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"];
+						}
+
+						this.text = this.animal[index];
+						this.animal.splice(index, 1);
+					}, 50);
+				}
+			},
+		},
+	})
+</script>
+
+<style>
+	#app {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+
+	p {
+		text-align: center;
+		font-size: 100px;
+	}
+
+	button {
+		font-size: 50px;
+	}
+</style>
