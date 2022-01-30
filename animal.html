@@ -1,18 +1,42 @@
 <html>
 
 <head>
-	<title>今晚开什么！！！</title>
+	<title>生肖</title>
+	
+	<style>
+		[v-cloak] {
+		  display: none;
+		}
+	
+		#app {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+		}
+	
+		p {
+			text-align: center;
+			font-size: 100px;
+		}
+	
+		button {
+			font-size: 50px;
+		}
+	</style>
 </head>
+
 
 <body>
 	<div id="app">
-		<p>{{text}}</p>
-		<button @click="toggle">{{interval ? '停止' : '开始'}}</button>
+		<p v-cloak>{{text}}</p>
+		<button class="button button-3d button-action button-pill button-caution" @click="toggle" v-cloak>{{interval ? '停止' : '开始'}}</button>
 	</div>
 </body>
 
 </html>
 
+<link rel="stylesheet" type="text/css" href="css/buttons.css">
 <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 <script>
 	var app = new Vue({
@@ -44,20 +68,3 @@
 	})
 </script>
 
-<style>
-	#app {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-	}
-
-	p {
-		text-align: center;
-		font-size: 100px;
-	}
-
-	button {
-		font-size: 50px;
-	}
-</style>

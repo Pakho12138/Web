@@ -2,17 +2,61 @@
 
 <head>
     <title>抽奖</title>
+
+    <style>
+        [v-cloak] {
+          display: none;
+        }
+        
+        #app {
+            transform: translate(-50%, -50%);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+        }
+    
+        button {
+            margin: 16px;
+            width: 150px;
+        }
+    
+        .div-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    
+        .div-number-box {
+            display: flex;
+            margin-bottom: 50px;
+        }
+    
+        .div-number {
+            border: 1px solid #999;
+            height: 30px;
+            width: 30px;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+        }
+    
+        .div-number:nth-of-type(6) {
+            margin-right: 50px;
+        }
+    </style>
 </head>
 
 <body>
     <div id="app">
         <div class="div-box">
             <div class="div-number-box">
-                <div class="div-number" v-for="(number,index) in numberList" :key="index">
+                <div class="div-number" v-for="(number,index) in numberList" :key="index" v-cloak>
                     {{number}}
                 </div>
             </div>
-            <button class="button button-3d button-action button-pill button-caution" v-show="curIndex < numberList.length" @click="btnClick">{{!interval && curIndex == 0 ? '开始' : '停止'}}</button>
+            <button class="button button-3d button-action button-pill button-caution" v-show="curIndex < numberList.length" @click="btnClick" v-cloak>{{!interval && curIndex == 0 ? '开始' : '停止'}}</button>
             <button class="button button-3d button-action button-pill button-caution" v-show="!interval && curIndex == numberList.length" @click="reset">重新开始</button>
         </div>
     </div>
@@ -64,42 +108,3 @@
     })
 </script>
 
-<style>
-    #app {
-        transform: translate(-50%, -50%);
-        position: absolute;
-        top: 50%;
-        left: 50%;
-    }
-
-    button {
-        margin: 16px;
-        width: 150px;
-    }
-
-    .div-box {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .div-number-box {
-        display: flex;
-        margin-bottom: 50px;
-    }
-
-    .div-number {
-        border: 1px solid #999;
-        height: 30px;
-        width: 30px;
-        border-radius: 7px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 8px;
-    }
-
-    .div-number:nth-of-type(6) {
-        margin-right: 50px;
-    }
-</style>
