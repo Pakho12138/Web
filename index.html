@@ -1,4 +1,5 @@
-<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="viewport"
+    content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <html>
 
 <head>
@@ -6,17 +7,22 @@
 
     <style>
         [v-cloak] {
-          display: none;
+            display: none;
         }
-        
-        #app {
+
+        body {
             display: flex;
-            transform: translate(-50%, -50%);
+            justify-content: center;
+        }
+
+        #app {
+            transform: translateY(-50%);
             position: absolute;
             top: 50%;
-            left: 50%;
+            justify-content: space-evenly;
+            max-width: 210px;
         }
-    
+
         button {
             margin: 16px;
         }
@@ -25,9 +31,12 @@
 
 <body>
     <div id="app">
-        <button class="button-primary button-box button-giant button-longshadow-right" @click="openAnimal">生肖</button>
-        <button class="button-caution button-box button-raised button-giant button-longshadow"
+        <button class="button-primary button-box button-raised button-giant button-longshadow-right"
+            @click="openAnimal">生肖</button>
+        <button class="button-caution button-box button-raised button-giant button-longshadow-right"
             @click="openSlotMachine">抽奖</button>
+        <button class="button-highlight button-box button-raised button-giant button-longshadow-right" @click="openWeather">天气</button>
+        <button class="button-royal button-box button-raised button-giant button-longshadow-right" @click="openMusic">音乐</button>
     </div>
 </body>
 
@@ -47,8 +56,13 @@
             },
             openSlotMachine() {
                 window.location.href = 'slot-machine.html';
-            }
+            },
+            openWeather() {
+                window.location.href = 'weather.html';
+            },
+            openMusic() {
+                window.location.href = 'music.html';
+            },
         },
     })
 </script>
-
