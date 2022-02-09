@@ -1,0 +1,418 @@
+<meta name="viewport"
+    content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<html>
+
+<head>
+    <title>音乐</title>
+
+    <!-- 引入样式 -->
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+    <!-- 引入组件库 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        .el-header {
+            padding-top: 44px;
+            padding-bottom: 10px;
+            background-color: #C20C0C;
+        }
+
+        .img-icon {
+            width: 25px;
+            height: 25px;
+            float: left;
+            margin: 3px 12px 3px 0;
+        }
+
+        .el-container {
+            height: 100%;
+        }
+
+        .div-searchbar {
+            height: 30px;
+            background: #f5f5f5;
+            color: #999;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 16px;
+            font-size: 13px;
+        }
+
+        .el-icon-search {
+            font-size: 15px;
+            margin-right: 4px;
+        }
+
+        .el-main {
+            padding: 0;
+        }
+
+        .el-carousel {
+            margin: 10px 16px 16px;
+            border-radius: 8px;
+        }
+
+        .el-carousel__button {
+            width: 6px;
+        }
+
+        .el-carousel__item {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .el-footer {
+            z-index: 3;
+            border-top: 1px solid #e6e6e6;
+            padding-bottom: 20px;
+            position: relative;
+        }
+
+        /* .el-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            filter: blur(20px);
+            margin: -30px;
+            opacity: .3;
+            z-index: -1;
+        } */
+
+        .div-dialog {
+            position: absolute;
+            height: calc(100% - 56px);
+            width: 100%;
+            top: 0;
+            background: white;
+            z-index: 2;
+        }
+
+        .div-dialog .el-header {
+            position: relative;
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .div-dialog .el-icon-search {
+            position: absolute;
+            top: 0;
+            line-height: 30px;
+            margin-left: 12px;
+            color: #999;
+        }
+
+        .div-dialog .el-main {
+            padding: 0 20px 20px;
+        }
+
+        .input-searchbar {
+            width: 100%;
+            height: 30px;
+            background: #f5f5f5;
+            color: #333;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 16px 0 32px;
+            font-size: 13px;
+            border: none;
+            outline: none;
+        }
+
+        .input-searchbar::placeholder {
+            color: #999;
+        }
+
+        .div-cancle {
+            float: right;
+            line-height: 30px;
+            margin-left: 12px;
+            color: #fff;
+            min-width: 32px;
+        }
+
+        .div-search-list {
+            /* background-color: rgba(0, 0, 0, .1); */
+            background-color: rgba(194, 12, 12, .1);
+            border-radius: 12px;
+            padding: 8px;
+        }
+
+        .div-list-item {
+            padding: 8px;
+            border-bottom: 1px solid #b2b2b2;
+        }
+
+        .div-list-item:last-of-type {
+            border-bottom: none;
+        }
+
+        .el-loading-spinner i {
+            color: #C20C0C;
+        }
+
+        .el-loading-spinner .el-loading-text {
+            color: #C20C0C;
+        }
+
+        .div-audio {
+            position: relative;
+            height: 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .div-audio i {
+            font-size: 27px;
+            color: #C20C0C;
+            opacity: .8;
+        }
+
+        .div-img-wrapper {
+            width: 40px;
+            height: 40px;
+            background-image: url(../assets/img/bg-music.jpg);
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -6px;
+        }
+
+        .img-song {
+            width: 25px;
+            height: 25px;
+            border-radius: 25px;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .div-name-wrapper {
+            display: flex;
+            align-items: center;
+            margin-left: 50px;
+        }
+
+        audio {
+            width: 100%;
+            height: 40px;
+            padding: 16px 0;
+        }
+
+        .rotate {
+            animation: rotate 30s linear infinite;
+        }
+
+        @-webkit-keyframes rotate {
+            from {
+                -webkit-transform: rotate(0deg);
+            }
+
+            to {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <el-container>
+            <el-header height="auto">
+                <img class="img-icon" src="../assets/img/icon-cloud-music.png" />
+                <div class="div-searchbar" @click="openSearch">
+                    <i class="el-icon-search"></i>
+                    搜索
+                </div>
+            </el-header>
+
+            <el-main>
+                <el-carousel :interval="4000" height="calc(134 / 375 * 100vw)">
+                    <el-carousel-item v-for="item in banners" :key="item.bannerId"
+                        :style="{ 'background-image': 'url(' + item.pic + ')'}">
+                    </el-carousel-item>
+                </el-carousel>
+            </el-main>
+
+            <el-footer height="auto">
+                <div class="div-audio">
+                    <div class="div-img-wrapper" :class="{ 'rotate' : !isPaused }">
+                        <img class="img-song" :src="musicDetail.al.picUrl"
+                            v-if="Object.keys(musicDetail).length > 0" />
+                    </div>
+                    <div class="div-name-wrapper">
+                        <div>
+                            <span v-cloak>{{ musicDetail.name ? musicDetail.name :
+                                ''}}</span>
+                            <span v-cloak style="font-size: 12px; color: #666;">{{ musicDetail.ar ? ' - ' +
+                                musicDetail.ar[0].name :
+                                ''}}</span>
+                        </div>
+                    </div>
+                    <i class="el-icon-video-play" v-show="isPaused" @click="audioPlay"></i>
+                    <i class="el-icon-video-pause" v-show="!isPaused" @click="audioPause"></i>
+                </div>
+                <audio :src="music.url" ref="audio" controls v-show="false">
+                    该浏览器不支持audio属性
+                </audio>
+            </el-footer>
+        </el-container>
+
+        <transition name="el-fade-in-linear">
+            <div class="div-dialog" v-show="showSearch">
+                <el-container>
+                    <el-header height="auto">
+                        <div style="position: relative; width: 100%;">
+                            <i class="el-icon-search"></i>
+                            <input type="text" class="input-searchbar" :placeholder="searchPlaceholder"
+                                v-model="searchVal" @keyup.enter="search" ref="searchbar"></input>
+                        </div>
+                        <div class="div-cancle" @click="closeSearch">
+                            取消
+                        </div>
+                    </el-header>
+
+                    <el-main v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
+                        <div class="div-search-list" v-if="searchList && searchList.length > 0">
+                            <div class="div-list-item" v-for="song in searchList" @click="playSong(song)">
+                                <div><b style="color: #333;">{{song.name}}</b></div>
+                                <div style="font-size: 13px; color: #333;">{{song.ar[0].name}}</div>
+                            </div>
+                        </div>
+                    </el-main>
+                </el-container>
+            </div>
+        </transition>
+    </div>
+</body>
+
+</html>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            banners: [],
+            curMusicID: '191528',
+            music: {},
+            musicDetail: {},
+            searchList: [],
+            searchVal: '',
+            searchPlaceholder: '周柏豪',
+            showSearch: false,
+            isPaused: true,
+            loading: false
+        },
+        methods: {
+            openSearch() {
+                this.showSearch = true;
+
+                setTimeout(() => {
+                    this.$refs.searchbar.focus();
+                }, 300);
+            },
+            closeSearch() {
+                this.showSearch = false;
+                this.searchVal = '';
+                this.searchList = [];
+            },
+            // 获取轮播图
+            getBanner() {
+                axios.get('https://cloud-music-api-nevermore.vercel.app/banner?type=2').then(response => {
+                    this.banners = response.data.banners ? response.data.banners : [];
+                }).catch(error => { });
+            },
+            //获取当前歌曲信息
+            async getMusic() {
+                await axios.get('https://cloud-music-api-nevermore.vercel.app/song/url?id=' + this.curMusicID).then(response => {
+                    let data = response.data.data ? response.data.data[0] : {};
+
+                    if (data.url) {
+                        this.music = data;
+                    }else{
+                        alert('歌曲加载失败！');
+                    }
+                }).catch(error => { });
+            },
+            //获取当前歌曲详情
+            async getMusicDetail() {
+                await axios.get('https://cloud-music-api-nevermore.vercel.app/song/detail?ids=' + this.curMusicID).then(response => {
+                    this.musicDetail = response.data.songs ? response.data.songs[0] : [];
+                }).catch(error => { });
+            },
+            //搜索歌曲
+            async search() {
+                if (this.searchVal == '') {
+                    this.searchVal = this.searchPlaceholder;
+                }
+
+                this.loading = true;
+                await axios.get('https://cloud-music-api-nevermore.vercel.app/cloudsearch?keywords=' + this.searchVal).then(response => {
+                    this.loading = false;
+                    this.searchList = response.data.result.songs ? response.data.result.songs : [];
+                }).catch(error => {
+                    this.loading = false;
+                });
+            },
+            //播放歌曲
+            playSong(song) {
+                this.curMusicID = song.id;
+                this.getMusic().then(() => {
+                    this.$refs.audio.play();
+                });
+            },
+            //播放器播放
+            audioPlay() {
+                this.$refs.audio.play();
+            },
+            //播放器暂停
+            audioPause() {
+                this.$refs.audio.pause();
+            },
+            syncAudioStatus() {
+                this.isPaused = this.$refs.audio.paused;
+            }
+        },
+        mounted() {
+            this.getBanner();
+            this.getMusic();
+            this.getMusicDetail();
+            this.isPaused = this.$refs.audio.paused;
+            this.$refs.audio.onplay = this.syncAudioStatus;
+            this.$refs.audio.onpause = this.syncAudioStatus;
+        }
+    })
+</script>
