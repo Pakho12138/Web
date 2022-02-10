@@ -183,16 +183,15 @@
         }
 
         .div-audio i {
-            font-size: 27px;
-            color: #C20C0C;
-            opacity: .8;
+            font-size: 30px;
+            position: absolute;
         }
 
         .div-img-wrapper {
-            width: 40px;
-            height: 40px;
-            background-image: url(../assets/img/bg-music.jpg);
-            background-size: 100% 100%;
+            width: 45px;
+            height: 45px;
+            background-image: url(../assets/img/bg-music.png);
+            background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
             display: flex;
@@ -220,6 +219,30 @@
             width: 100%;
             height: 40px;
             padding: 16px 0;
+        }
+
+        .div-btn-play {
+            position: relative;
+            width: 30px;
+            height: 30px;
+        }
+
+        .icon-play {
+            height: 28px;
+            width: 28px;
+            border: 2px solid rgba(194, 12, 12, .3);
+            border-radius: 25px;
+            background: url(../assets/icon/play.svg) 9px 7px no-repeat;
+            background-size: 13px 13px;
+        }
+
+        .icon-pause {
+            height: 28px;
+            width: 28px;
+            border: 2px solid rgba(194, 12, 12, .3);
+            border-radius: 25px;
+            background: url(../assets/icon/pause.svg) 8px 7px no-repeat;
+            background-size: 13px 13px;
         }
 
         .rotate {
@@ -269,9 +292,8 @@
 
             <el-footer height="auto">
                 <div class="div-audio">
-                    <div class="div-img-wrapper" :class="{ 'rotate' : !isPaused }">
-                        <img class="img-song" :src="musicDetail.al.picUrl"
-                            v-if="Object.keys(musicDetail).length > 0" />
+                    <div class="div-img-wrapper rotate" :style="{ 'animation-play-state' : isPaused ? 'paused' : 'running' }">
+                        <img class="img-song" :src="musicDetail.al.picUrl" v-if="Object.keys(musicDetail).length > 0" />
                     </div>
                     <div class="div-name-wrapper">
                         <div>
@@ -282,8 +304,12 @@
                                 ''}}</span>
                         </div>
                     </div>
-                    <i class="el-icon-video-play" v-show="isPaused" @click="audioPlay"></i>
-                    <i class="el-icon-video-pause" v-show="!isPaused" @click="audioPause"></i>
+                    <div class="div-btn-play">
+                        <el-progress type="circle" :percentage="playProgress" :width="32" :stroke-width="2"
+                            :color="'#C20C0C'" :show-text="false" style="position: absolute;"></el-progress>
+                        <i class="icon-play" v-show="isPaused" @click="audioPlay"></i>
+                        <i class="icon-pause" v-show="!isPaused" @click="audioPause"></i>
+                    </div>
                 </div>
                 <audio :src="music.url" ref="audio" controls v-show="false">
                     该浏览器不支持audio属性
@@ -332,6 +358,7 @@
             searchList: [],
             searchVal: '',
             searchPlaceholder: '周柏豪',
+            playProgress: 0,
             showSearch: false,
             isPaused: true,
             loading: false
@@ -362,7 +389,7 @@
 
                     if (data.url) {
                         this.music = data;
-                    }else{
+                    } else {
                         alert('歌曲加载失败！');
                     }
                 }).catch(error => { });
@@ -402,9 +429,18 @@
             audioPause() {
                 this.$refs.audio.pause();
             },
+            //同步播放按钮状态
             syncAudioStatus() {
                 this.isPaused = this.$refs.audio.paused;
+            },
+            //获取歌曲播放进度
+            getPercent() {
+                if (this.$refs.audio) {
+                    this.playProgress = this.$refs.audio.currentTime / this.$refs.audio.duration * 100;
+                }
             }
+        },
+        computed: {
         },
         mounted() {
             this.getBanner();
@@ -413,6 +449,7 @@
             this.isPaused = this.$refs.audio.paused;
             this.$refs.audio.onplay = this.syncAudioStatus;
             this.$refs.audio.onpause = this.syncAudioStatus;
+            this.$refs.audio.ontimeupdate = this.getPercent;
         }
     })
 </script>
