@@ -83,19 +83,6 @@
             position: relative;
         }
 
-        /* .el-footer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            filter: blur(20px);
-            margin: -30px;
-            opacity: .3;
-            z-index: -1;
-        } */
-
         .div-dialog {
             position: absolute;
             height: calc(100% - 56px);
@@ -232,7 +219,7 @@
             width: 28px;
             border: 2px solid rgba(194, 12, 12, .3);
             border-radius: 25px;
-            background: url(../assets/icon/play.svg) 9px center no-repeat;
+            background: url(../assets/icon/play.svg) 9px 7px no-repeat;
             background-size: 13px 13px;
         }
 
@@ -241,7 +228,7 @@
             width: 28px;
             border: 2px solid rgba(194, 12, 12, .3);
             border-radius: 25px;
-            background: url(../assets/icon/pause.svg) 8px center no-repeat;
+            background: url(../assets/icon/pause.svg) 8px 7px no-repeat;
             background-size: 13px 13px;
         }
 
@@ -268,6 +255,41 @@
                 transform: rotate(360deg);
             }
         }
+
+        .el-icon-arrow-down {
+            font-size: 30px;
+            color: #fff;
+        }
+
+        .el-drawer .el-header {
+            background-color: transparent;
+        }
+
+        .el-drawer .el-container {
+            position: relative;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            overflow: hidden;
+        }
+
+        .el-drawer .el-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            filter: blur(20px);
+            margin: -30px;
+            background: inherit;
+        }
+
+        .div-lyric {
+            word-wrap: break-word;
+            color: white;
+            padding: 50px;
+        }
     </style>
 </head>
 
@@ -292,7 +314,9 @@
 
             <el-footer height="auto">
                 <div class="div-audio">
-                    <div class="div-img-wrapper rotate" :style="{ 'animation-play-state' : isPaused ? 'paused' : 'running' }">
+                    <div class="div-img-wrapper rotate"
+                        :style="{ 'animation-play-state' : isPaused ? 'paused' : 'running' }"
+                        @click="showDetail = true">
                         <img class="img-song" :src="musicDetail.al.picUrl" v-if="Object.keys(musicDetail).length > 0" />
                     </div>
                     <div class="div-name-wrapper">
@@ -306,7 +330,7 @@
                     </div>
                     <div class="div-btn-play">
                         <el-progress type="circle" :percentage="playProgress" :width="32" :stroke-width="2"
-                            :color="'#C20C0C'" :show-text="false" style="position: absolute;"></el-progress>
+                            color="#C20C0C" :show-text="false" style="position: absolute;"></el-progress>
                         <i class="icon-play" v-show="isPaused" @click="audioPlay"></i>
                         <i class="icon-pause" v-show="!isPaused" @click="audioPause"></i>
                     </div>
@@ -342,6 +366,20 @@
                 </el-container>
             </div>
         </transition>
+
+        <el-drawer :with-header="false" :visible.sync="showDetail" direction="btt" size="100%" ref="drawer">
+            <el-container
+                :style="{'background' : Object.keys(musicDetail).length > 0 ? 'url(' + musicDetail.al.picUrl + ')' : '#fff'}">
+                <el-header height="auto" style="z-index: 1;">
+                    <i class="el-icon-arrow-down" @click="$refs.drawer.closeDrawer()"></i>
+                </el-header>
+                <el-main style="z-index: 1;">
+                    <div class="div-lyric">
+                        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                    </div>
+                </el-main>
+            </el-container>
+        </el-drawer>
     </div>
 </body>
 
@@ -359,6 +397,7 @@
             searchVal: '',
             searchPlaceholder: '周柏豪',
             playProgress: 0,
+            showDetail: false,
             showSearch: false,
             isPaused: true,
             loading: false
