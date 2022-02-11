@@ -335,7 +335,8 @@
                         <i class="icon-pause" v-show="!isPaused" @click="audioPause"></i>
                     </div>
                 </div>
-                <audio :src="music.url" ref="audio" controls v-show="false">
+                <audio :src="music.url" ref="audio" controls
+                    v-show="false">
                     该浏览器不支持audio属性
                 </audio>
             </el-footer>
@@ -390,17 +391,20 @@
         el: '#app',
         data: {
             banners: [],
-            curMusicID: '191528',
+            curMusicID: '1330348068',
             music: {},
             musicDetail: {},
             searchList: [],
             searchVal: '',
-            searchPlaceholder: '周柏豪',
+            searchPlaceholder: '起风了',
             playProgress: 0,
             showDetail: false,
             showSearch: false,
             isPaused: true,
-            loading: false
+            loading: false,
+            //歌曲最大加载时间，超出则提示加载失败
+            loadingTime: 10,
+            intervalReady: null
         },
         methods: {
             openSearch() {
@@ -422,16 +426,30 @@
                 }).catch(error => { });
             },
             //获取当前歌曲信息
-            async getMusic() {
-                await axios.get('https://cloud-music-api-nevermore.vercel.app/song/url?id=' + this.curMusicID).then(response => {
-                    let data = response.data.data ? response.data.data[0] : {};
+            getMusic(autoPlay = true) {
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        const response = await axios.get('https://cloud-music-api-nevermore.vercel.app/song/url?id=' + this.curMusicID);
+                        let data = response.data.data ? response.data.data[0] : {};
 
-                    if (data.url) {
-                        this.music = data;
-                    } else {
-                        alert('歌曲加载失败！');
+                        if (data) {
+                            if (data.code == 404) {
+                                data.url = 'https://music.163.com/song/media/outer/url?id=' + this.curMusicID + '.mp3'
+                            }
+
+                            this.getMusicDetail();
+
+                            this.music = data;
+                            autoPlay && this.$refs.audio.load();
+                            autoPlay && await this.audioPlay();
+                            resolve();
+                        } else {
+                            reject('歌曲加载失败！');
+                        }
+                    } catch (error) {
+                        reject('歌曲加载失败！');
                     }
-                }).catch(error => { });
+                });
             },
             //获取当前歌曲详情
             async getMusicDetail() {
@@ -454,15 +472,40 @@
                 });
             },
             //播放歌曲
-            playSong(song) {
-                this.curMusicID = song.id;
-                this.getMusic().then(() => {
-                    this.$refs.audio.play();
-                });
+            async playSong(song) {
+                try {
+                    this.music = {};
+                    this.musicDetail = {};
+                    this.curMusicID = song.id;
+                    await this.getMusic();
+                } catch (error) {
+                    alert(error);
+                }
             },
             //播放器播放
             audioPlay() {
-                this.$refs.audio.play();
+                return new Promise((resolve, reject) => {
+                    if (this.$refs.audio.readyState == 4) {
+                        this.$refs.audio.play();
+                        resolve();
+                    }
+
+                    this.intervalReady = setInterval(() => {
+                        if (this.loadingTime == 0) {
+                            this.loadingTime = 10;
+                            clearInterval(this.intervalReady);
+                            reject();
+                        }
+
+                        if (this.$refs.audio.readyState == 4) {
+                            this.$refs.audio.play();
+                            clearInterval(this.intervalReady);
+                            resolve();
+                        } else {
+                            this.loadingTime--;
+                        }
+                    }, 1000);
+                });
             },
             //播放器暂停
             audioPause() {
@@ -474,8 +517,10 @@
             },
             //获取歌曲播放进度
             getPercent() {
-                if (this.$refs.audio) {
+                if (this.$refs.audio && this.$refs.audio.readyState == 4) {
                     this.playProgress = this.$refs.audio.currentTime / this.$refs.audio.duration * 100;
+                }else{
+                    this.playProgress = 0;
                 }
             }
         },
@@ -483,8 +528,11 @@
         },
         mounted() {
             this.getBanner();
-            this.getMusic();
-            this.getMusicDetail();
+            this.getMusic(false).then(resolve => {
+                this.getMusicDetail();
+            }).catch(error => {
+                alert(error);
+            });
             this.isPaused = this.$refs.audio.paused;
             this.$refs.audio.onplay = this.syncAudioStatus;
             this.$refs.audio.onpause = this.syncAudioStatus;
