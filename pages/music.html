@@ -335,8 +335,7 @@
                         <i class="icon-pause" v-show="!isPaused" @click="audioPause"></i>
                     </div>
                 </div>
-                <audio :src="music.url" ref="audio" controls
-                    v-show="false">
+                <audio :src="music.url" ref="audio" controls v-show="false">
                     该浏览器不支持audio属性
                 </audio>
             </el-footer>
@@ -484,28 +483,32 @@
             },
             //播放器播放
             audioPlay() {
-                return new Promise((resolve, reject) => {
-                    if (this.$refs.audio.readyState == 4) {
-                        this.$refs.audio.play();
-                        resolve();
-                    }
-
-                    this.intervalReady = setInterval(() => {
-                        if (this.loadingTime == 0) {
-                            this.loadingTime = 10;
-                            clearInterval(this.intervalReady);
-                            reject();
-                        }
-
+                try {
+                    return new Promise((resolve, reject) => {
                         if (this.$refs.audio.readyState == 4) {
                             this.$refs.audio.play();
-                            clearInterval(this.intervalReady);
                             resolve();
-                        } else {
-                            this.loadingTime--;
                         }
-                    }, 1000);
-                });
+
+                        this.intervalReady = setInterval(() => {
+                            if (this.loadingTime == 0) {
+                                this.loadingTime = 10;
+                                clearInterval(this.intervalReady);
+                                reject();
+                            }
+
+                            if (this.$refs.audio.readyState == 4) {
+                                this.$refs.audio.play();
+                                clearInterval(this.intervalReady);
+                                resolve();
+                            } else {
+                                this.loadingTime--;
+                            }
+                        }, 1000);
+                    });
+                } catch (error) {
+                    alert(error);
+                }
             },
             //播放器暂停
             audioPause() {
@@ -519,7 +522,7 @@
             getPercent() {
                 if (this.$refs.audio && this.$refs.audio.readyState == 4) {
                     this.playProgress = this.$refs.audio.currentTime / this.$refs.audio.duration * 100;
-                }else{
+                } else {
                     this.playProgress = 0;
                 }
             }
